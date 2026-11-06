@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منظّم — الصفحة الرئيسية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070A1A; --side:#0C1030; --surface:#11163A; --surface-2:#161C47;
+  --line:rgba(156,146,255,.14); --text:#F2F1FF; --muted:#9C9EC9;
+  --violet:#8B5CF6; --violet-hi:#B39DFF; --mint:#34D399; --amber:#FBBF24;
+  --r-xl:26px; --r-md:16px;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif;font-size:15px;line-height:1.6;color:var(--text);
+  background:radial-gradient(900px 600px at 0% 100%,rgba(109,40,217,.22),transparent 60%),var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--violet-hi);outline-offset:2px}
+
+/* ---------- الهيكل ---------- */
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;padding:28px 18px;background:var(--side);border-inline-end:1px solid var(--line);overflow:hidden;isolation:isolate;position:sticky}
+.sidebar::after{content:"";position:absolute;inset-inline:0;bottom:0;height:38%;z-index:-1;background:linear-gradient(to top,rgba(109,40,217,.42),transparent)}
+.brand{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin-bottom:34px}
+.brand-mark{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#9B6BFF,#6D35E8);box-shadow:0 14px 34px -10px rgba(139,92,246,.8)}
+.brand-mark .ic{width:26px;height:26px;stroke-width:2.4}
+.brand-name{font-size:20px;font-weight:700}
+.brand p:last-child{font-size:12px;color:var(--muted)}
+.nav{display:grid;gap:6px}
+.nav a{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:14px;color:var(--muted);text-decoration:none;font-weight:500;transition:background .2s,color .2s}
+.nav a:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.nav a[aria-current="page"]{background:linear-gradient(135deg,#7C3AED,#6D4AFF);color:#fff;box-shadow:0 12px 28px -14px rgba(124,58,237,.9)}
+
+.content{display:flex;flex-direction:column;gap:22px;padding:28px clamp(18px,3vw,40px) 40px;min-width:0}
+.topbar{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.search{position:relative;flex:1 1 300px;max-width:460px}
+.search .ic{position:absolute;inset-inline-start:16px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search input{width:100%;padding:13px 46px 13px 16px;padding-inline-start:46px;padding-inline-end:16px;border-radius:16px;border:1px solid var(--line);background:var(--surface)}
+.search input::placeholder{color:var(--muted)}
+.datecard{display:flex;flex-direction:column;gap:4px;padding:14px 20px;min-width:230px;border-radius:20px;background:var(--surface);border:1px solid var(--line)}
+.date-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.clock{display:flex;align-items:baseline;gap:10px}
+.clock-time{direction:ltr;font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+.clock-period{font-size:13px;color:var(--violet-hi)}
+.hero h1{font-size:clamp(24px,3vw,34px);font-weight:700;margin-bottom:4px}
+.hero p{color:var(--muted)}
+
+/* ---------- البطاقات الإحصائية ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.stat{--accent:var(--violet);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:22px;border-radius:var(--r-xl);
+  background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 14%,var(--surface)),var(--surface));border:1px solid var(--line)}
+.stat--mint{--accent:var(--mint)} .stat--amber{--accent:var(--amber)} .stat--sky{--accent:#60A5FA}
+.stat-label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.stat-value{display:block;font-size:32px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat-ic{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;flex:none;color:var(--accent);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.stat-ic .ic{width:26px;height:26px}
+
+/* ---------- الشبكة والبطاقات ---------- */
+.row{display:grid;gap:22px;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.row--bottom{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}
+.card{padding:24px;min-width:0;border-radius:var(--r-xl);background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.card-title{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700}
+.card-title .ic{color:var(--violet-hi)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:12px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer;transition:filter .2s}
+.btn--primary{background:linear-gradient(135deg,#7C3AED,#8B5CF6);color:#fff;box-shadow:0 12px 24px -14px rgba(139,92,246,.9)}
+.btn--primary:hover{filter:brightness(1.08)}
+.empty{padding:18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r-md)}
+
+/* ---------- خطة الأسبوع ---------- */
+.week-wrap{overflow-x:auto;padding:4px}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;min-width:540px}
+.day{display:flex;flex-direction:column;align-items:center;gap:8px;min-height:168px;padding:14px 6px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.day-name{font-size:12px;color:var(--muted);white-space:nowrap}
+.day-num{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.day.is-today{background:linear-gradient(180deg,#8B5CF6,#5B3DF0);border-color:transparent;box-shadow:0 18px 36px -18px rgba(139,92,246,.9)}
+.day.is-today .day-name,.day.is-today .dot-more{color:rgba(255,255,255,.85)}
+.dots{display:flex;flex-direction:column;align-items:center;gap:7px;margin-top:auto}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--tag,var(--violet))}
+.dot-more{font-size:11px;color:var(--muted)}
+
+/* ---------- التقويم ---------- */
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;text-align:center}
+.cal-head{font-size:12px;color:var(--muted);padding-bottom:6px}
+.cal-day{position:relative;display:block;padding:9px 0;border-radius:12px;font-size:14px;font-variant-numeric:tabular-nums}
+.cal-day.is-today{background:linear-gradient(135deg,#8B5CF6,#6D4AFF);color:#fff;font-weight:700;box-shadow:0 12px 24px -14px rgba(139,92,246,.9)}
+.cal-dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--mint)}
+.cal-month{font-size:13px;color:var(--muted)}
+
+/* ---------- المهام ---------- */
+.add-form{display:none;grid-template-columns:minmax(0,1fr) 120px 130px auto;gap:8px;margin-bottom:14px}
+.add-form.is-open{display:grid}
+.field{min-width:0;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg)}
+.field option{background:var(--surface);color:var(--text)}
+.tasks{display:grid;gap:10px;list-style:none;margin:0;padding:0}
+.task{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:var(--r-md);background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.task-main{flex:1;min-width:0}
+.task-title{font-size:15px;font-weight:600}
+.task-time{display:inline-block;direction:ltr;font-size:12px;color:var(--muted)}
+.task.is-done .task-title{text-decoration:line-through;opacity:.55}
+.check{position:relative;display:inline-grid;place-items:center;flex:none;cursor:pointer}
+.check input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.box{width:22px;height:22px;border-radius:7px;border:1.6px solid rgba(179,157,255,.5);display:grid;place-items:center;transition:background .2s,border-color .2s}
+.box::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.4px 2.4px 0;transform:translateY(-1px) rotate(45deg);opacity:0}
+.check input:checked + .box{background:var(--mint);border-color:var(--mint)}
+.check input:checked + .box::after{opacity:1}
+.check input:focus-visible + .box{outline:2px solid var(--violet-hi);outline-offset:2px}
+.tag{display:inline-flex;padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;color:#fff;background:var(--tag);white-space:nowrap}
+.t-study{--tag:#2563EB}.t-work{--tag:#10B981}.t-self{--tag:#F59E0B}.t-family{--tag:#EC4899}.t-read{--tag:#6366F1}
+.star{display:grid;place-items:center;padding:6px;border:0;border-radius:10px;background:none;color:var(--muted);cursor:pointer}
+.star:hover{background:rgba(255,255,255,.06)}
+.star[aria-pressed="true"]{color:var(--amber)}
+.star[aria-pressed="true"] .ic{fill:currentColor}
+
+/* ---------- الأهداف ---------- */
+.ring-wrap{position:relative;width:184px;height:184px;margin:8px auto 18px}
+.ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-track{fill:none;stroke:rgba(139,92,246,.14);stroke-width:9}
+.ring-bar{fill:none;stroke:var(--violet);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .9s ease;filter:drop-shadow(0 0 10px rgba(139,92,246,.6))}
+.ring-value{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring-value strong{font-size:40px;font-weight:700;line-height:1}
+.ring-value span{margin-top:6px;font-size:12px;color:var(--muted)}
+.goal-list{display:grid;gap:12px;list-style:none;margin:0;padding:0}
+.goal{display:flex;align-items:center;gap:10px;font-size:14px}
+.goal-title{flex:1}
+.goal-state{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none;font-size:12px;font-weight:700;color:#fff;border:1.6px solid rgba(179,157,255,.45)}
+.goal-state.is-done{background:var(--mint);border-color:var(--mint)}
+.goal-pct{font-size:12px;color:var(--muted);direction:ltr}
+
+/* ---------- المخطط والملاحظات ---------- */
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart-grid line{stroke:rgba(156,146,255,.12);stroke-dasharray:4 6}
+.chart-line{fill:none;stroke:#A78BFA;stroke-width:3;stroke-linecap:round}
+.chart-dot{fill:#C4B5FD;stroke:var(--surface);stroke-width:3}
+.chart-badge{position:absolute;top:-6px;left:84%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:12px;font-size:13px;font-weight:700;background:rgba(139,92,246,.18);border:1px solid rgba(179,157,255,.3);white-space:nowrap}
+.chart-badge .ic{width:16px;height:16px}
+.chart-x{display:grid;grid-template-columns:repeat(4,1fr);direction:ltr;text-align:center;font-size:13px;color:var(--muted);margin-top:10px}
+.notes{display:grid;grid-template-columns:120px minmax(0,1fr);gap:18px;align-items:center}
+.notes svg{width:100%;height:auto}
+.note{width:100%;min-height:130px;padding:18px;resize:none;line-height:2;border-radius:var(--r-md);border:1px solid var(--line);background:rgba(7,10,26,.55)}
+
+/* ---------- الشريط السفلي ---------- */
+.banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;border-radius:var(--r-xl);
+  background:linear-gradient(100deg,#2E1A6B,#5B2BD6 55%,#3B5BDB);border:1px solid rgba(179,157,255,.25);box-shadow:0 24px 50px -30px rgba(109,40,217,.9)}
+.banner-text{display:flex;align-items:center;gap:12px;font-size:19px;font-weight:700}
+.banner-pill{padding:10px 18px;border-radius:14px;font-size:14px;background:rgba(255,255,255,.12)}
+
+/* ---------- التجاوب ---------- */
+@media (max-width:1100px){.row,.row--bottom{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:1000px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .sidebar{position:static;height:auto;padding:16px;border-inline-end:0;border-bottom:1px solid var(--line)}
+  .sidebar::after{display:none}
+  .brand{flex-direction:row;margin:0 0 12px;text-align:start}
+  .nav{grid-auto-flow:column;overflow-x:auto}
+  .nav a{white-space:nowrap}
+}
+@media (max-width:640px){
+  .add-form{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .add-form .field:first-child{grid-column:1/-1}
+  .notes{grid-template-columns:minmax(0,1fr)}
+  .notes svg{max-width:120px}
+}
+@media (max-width:560px){.stats{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- رموز SVG المشتركة -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-tasks" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="m8 12 2.8 2.8L16 9.2"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-plan" viewBox="0 0 24 24"><path d="M5 20V12M12 20V5M19 20v-6"/></symbol>
+  <symbol id="i-pie" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.5 5.5l2.1 2.1M16.4 16.4l2.1 2.1M5.5 18.5l2.1-2.1M16.4 7.6l2.1-2.1"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0V4ZM8 6H4.5v1a3.5 3.5 0 0 0 3.5 3.5M16 6h3.5v1a3.5 3.5 0 0 1-3.5 3.5M12 13v4M8.5 20h7"/></symbol>
+  <symbol id="i-done" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-weather" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3.2"/><path d="M8 1.8v1.4M2.2 8h1.4M3.8 3.8l1 1M12.2 3.8l-1 1M9 19h9a3.5 3.5 0 0 0-.3-7 5.5 5.5 0 0 0-10.3 1.6A3 3 0 0 0 9 19Z"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M6 3.5h9l3.5 3.5v13.5H6z"/><path d="M9 11h6M9 15h4"/></symbol>
+</svg>
+
+<div class="app">
+
+  <!-- القائمة الجانبية -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand">
+        <div class="brand-mark"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg></div>
+        <div>
+          <p class="brand-name">منظّم</p>
+          <p>خطّط .. أنجز .. حقّق</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="القائمة الرئيسية">
+        <a href="#" aria-current="page"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg>الرئيسية</a>
+        <a href="#"><svg class="ic" aria-hidden="true"><use href="#i-tasks"/></svg>مهامي</a>
+        <a href="#"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg>تقويم</a>
+        <a href="#"><svg class="ic" aria-hidden="true"><use href="#i-plan"/></svg>خططي</a>
+        <a href="#"><svg class="ic" aria-hidden="true"><use href="#i-pie"/></svg>إحصائيات</a>
+        <a href="#"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg>الإعدادات</a>
+      </nav>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <!-- الشريط العلوي -->
+    <header class="topbar">
+      <label class="search">
+        <span class="visually-hidden">بحث</span>
+        <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+        <input type="search" placeholder="ابحث عن مهمة أو خطة...">
+      </label>
+      <div class="datecard">
+        <div class="date-row">
+          <svg class="ic" style="width:16px;height:16px" aria-hidden="true"><use href="#i-calendar"/></svg>
+          <span id="todayDate"></span>
+        </div>
+        <div class="clock">
+          <span class="clock-time" id="clock">--:--</span>
+          <span class="clock-period" id="period"></span>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1 id="greeting">مرحباً 👋</h1>
+      <p>نجاحك يبدأ من تنظيم وقتك 💜</p>
+    </section>
+
+    <!-- ملخص الأسبوع -->
+    <section class="stats" aria-label="ملخص الأسبوع">
+      <article class="stat">
+        <div class="stat-ic"><svg class="ic" aria-hidden="true"><use href="#i-trophy"/></svg></div>
+        <div><span class="stat-label">نسبة الإنجاز هذا الأسبوع</span><span class="stat-value" id="statPercent">0%</span></div>
+      </article>
+      <article class="stat stat--mint">
+        <div class="stat-ic"><svg class="ic" aria-hidden="true"><use href="#i-done"/></svg></div>
+        <div><span class="stat-label">المهام المكتملة</span><span class="stat-value" id="statDone">0</span></div>
+      </article>
+      <article class="stat stat--amber">
+        <div class="stat-ic"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg></div>
+        <div><span class="stat-label">المهام المتبقية</span><span class="stat-value" id="statPending">0</span></div>
+      </article>
+      <article class="stat stat--sky">
+        <div class="stat-ic"><svg class="ic" aria-hidden="true"><use href="#i-weather"/></svg></div>
+        <div><span class="stat-label">المدينة المنورة · جو صافٍ</span><span class="stat-value">24°</span></div>
+      </article>
+    </section>
+
+    <!-- خطة الأسبوع والتقويم -->
+    <section class="row">
+      <article class="card">
+        <header class="card-head"><h2 class="card-title"><svg class="ic" aria-hidden="true"><use href="#i-plan"/></svg>خطة الأسبوع</h2></header>
+        <div class="week-wrap"><div class="week" id="week"></div></div>
+      </article>
+      <article class="card">
+        <header class="card-head">
+          <h2 class="card-title"><svg class="ic" aria-hidden="true"><use href="#i-calendar"/></svg>التقويم الشهري</h2>
+          <span class="cal-month" id="calMonth"></span>
+        </header>
+        <div class="cal" id="calGrid"></div>
+      </article>
+    </section>
+
+    <!-- المهام والأهداف -->
+    <section class="row">
+      <article class="card">
+        <header class="card-head">
+          <h2 class="card-title"><svg class="ic" aria-hidden="true"><use href="#i-tasks"/></svg>مهامي اليوم</h2>
+          <button class="btn btn--primary" id="toggleAdd" type="button" aria-expanded="false" aria-controls="addForm">
+            <svg class="ic" style="width:16px;height:16px" aria-hidden="true"><use href="#i-plus"/></svg>إضافة مهمة
+          </button>
+        </header>
+        <form class="add-form" id="addForm" autocomplete="off">
+          <input class="field" id="taskTitle" placeholder="ماذا تريد أن تنجز اليوم؟" aria-label="عنوان المهمة" required>
+          <input class="field" id="taskTime" type="time" value="12:00" aria-label="الوقت">
+          <select class="field" id="taskTag" aria-label="التصنيف">
+            <option value="study">دراسة</option><option value="work">عمل</option><option value="self">شخصية</option><option value="family">أسرة</option><option value="read">قراءة</option>
+          </select>
+          <button class="btn btn--primary" type="submit">حفظ</button>
+        </form>
+        <ul class="tasks" id="todayList"></ul>
+      </article>
+
+      <article class="card">
+        <header class="card-head"><h2 class="card-title"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg>الأهداف والإنجازات</h2></header>
+        <div class="ring-wrap">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="ring-track" cx="60" cy="60" r="54"/>
+            <circle class="ring-bar" id="ringBar" cx="60" cy="60" r="54"/>
+          </svg>
+          <div class="ring-value"><strong id="ringValue">0%</strong><span>تحقيق الأهداف الكلية</span></div>
+        </div>
+        <ul class="goal-list" id="goalList"></ul>
+      </article>
+    </section>
+
+    <!-- المخطط والملاحظات -->
+    <section class="row row--bottom">
+      <article class="card">
+        <header class="card-head"><h2 class="card-title"><svg class="ic" aria-hidden="true"><use href="#i-plan"/></svg>مخطط الشهر</h2></header>
+        <div class="chart">
+          <svg id="chartSvg" viewBox="0 0 600 190" role="img" aria-label="تطور التقدم خلال آخر أربعة أشهر"></svg>
+          <div class="chart-badge"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg><span id="growth"></span></div>
+        </div>
+        <div class="chart-x" id="chartX"></div>
+      </article>
+
+      <article class="card">
+        <header class="card-head"><h2 class="card-title"><svg class="ic" aria-hidden="true"><use href="#i-note"/></svg>ملاحظات سريعة</h2></header>
+        <div class="notes">
+          <svg viewBox="0 0 130 120" aria-hidden="true">
+            <rect x="6" y="92" width="100" height="12" rx="4" fill="#5B21B6"/>
+            <rect x="14" y="76" width="84" height="16" rx="4" fill="#7C3AED"/>
+            <rect x="2" y="106" width="116" height="10" rx="4" fill="#4C1D95"/>
+            <path d="M40 72 42 42h36l2 30Z" fill="#8B5CF6"/>
+            <ellipse cx="60" cy="42" rx="18" ry="4" fill="#C4B5FD"/>
+            <rect x="46" y="10" width="7" height="36" rx="3" transform="rotate(-14 49 28)" fill="#DDD6FE"/>
+            <rect x="62" y="8" width="7" height="38" rx="3" transform="rotate(12 65 27)" fill="#A78BFA"/>
+          </svg>
+          <textarea class="note" aria-label="ملاحظة سريعة">التنظيم سرّ النجاح .. خطّط جيداً، وابدأ بثقة.</textarea>
+        </div>
+      </article>
+    </section>
+
+    <!-- الشريط التحفيزي -->
+    <footer class="banner">
+      <p class="banner-text"><svg class="ic" style="color:var(--amber);fill:var(--amber)" aria-hidden="true"><use href="#i-star"/></svg>مع التخطيط .. تصنع مستقبلك الأفضل</p>
+      <span class="banner-pill">💜 تمنياتنا لك يوماً موفقاً</span>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+/* ---------- البيانات (في المحاكاة داخل الذاكرة؛ استبدلها بواجهة Laravel لاحقاً) ---------- */
+const USER_NAME = 'حسام الدين';
+const TAG = { study:'دراسة', work:'عمل', self:'شخصية', family:'أسرة', read:'قراءة' };
+const DAYS_AR = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+
+const pending = [
+  ['مراجعة محاضرة الاقتصاد','study','09:00',0,true],
+  ['إنجاز تقرير البحث','work','11:00',0,false],
+  ['ممارسة الرياضة','self','15:00',0,false],
+  ['زيارة العائلة','family','19:00',0,false],
+  ['قراءة كتاب مفيد','read','21:00',0,false],
+  ['اجتماع فريق المشروع','work','10:00',1,false],
+  ['مراجعة خطة الشهر','self','16:00',2,true],
+  ['لقاء المرشد الأكاديمي','study','12:00',4,false],
+];
+const finished = [
+  ['تحضير ملخص الفصل الثالث','study','08:00',-1],
+  ['الرد على رسائل العمل','work','10:30',-1],
+  ['المشي الصباحي','self','06:30',-2],
+  ['الاتصال بالوالدة','family','18:00',-2],
+  ['قراءة عشرين صفحة','read','22:00',-3],
+  ['مراجعة ميزانية الشهر','work','12:00',-3],
+  ['حل تمارين الإحصاء','study','09:30',-4],
+  ['ترتيب مساحة العمل','self','17:00',-4],
+  ['حضور ورشة التصميم','work','14:00',-5],
+  ['تقييم أداء الأسبوع','self','20:00',-5],
+  ['مراجعة الأهداف','self','21:30',-6],
+  ['قراءة مقال تقني','read','07:30',-6],
+];
+
+let nextId = 100;
+const tasks = [
+  ...pending.map(([title,tag,time,day,starred]) => ({ id:nextId++, title, tag, time, day, starred, done:false })),
+  ...finished.map(([title,tag,time,day]) => ({ id:nextId++, title, tag, time, day, starred:false, done:true })),
+];
+
+const goals = [
+  { title:'النجاح في الدراسة', progress:100 },
+  { title:'الالتزام بالعادة', progress:100 },
+  { title:'ممارسة الرياضة', progress:100 },
+  { title:'تعلم مهارة جديدة', progress:0 },
+  { title:'قراءة كتاب مفيد', progress:50 },
+];
+
+const monthly = [40, 62, 48, 70]; // آخر أربعة أشهر (بيانات تجريبية)
+
+/* ---------- أدوات مساعدة ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const icon = (name, cls = 'ic') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+const fmtTime = t => {
+  let [h, m] = t.split(':').map(Number);
+  const period = h < 12 ? 'ص' : 'م';
+  h = h % 12 || 12;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')} ${period}`;
+};
+const monthFmt = (date) => new Intl.DateTimeFormat('ar-EG', { month:'long', calendar:'gregory', numberingSystem:'latn' }).format(date);
+
+/* ---------- العرض ---------- */
+function renderStats() {
+  const done = tasks.filter(t => t.done).length;
+  const left = tasks.length - done;
+  $('#statPercent').textContent = (tasks.length ? Math.round(done / tasks.length * 100) : 0) + '%';
+  $('#statDone').textContent = done;
+  $('#statPending').textContent = left;
+}
+
+function taskRow(t) {
+  return `<li class="task${t.done ? ' is-done' : ''}">
+    <label class="check">
+      <input type="checkbox" data-check="${t.id}" ${t.done ? 'checked' : ''} aria-label="إنجاز: ${esc(t.title)}">
+      <span class="box"></span>
+    </label>
+    <div class="task-main">
+      <h3 class="task-title">${esc(t.title)}</h3>
+      <span class="task-time">${fmtTime(t.time)}</span>
+    </div>
+    <span class="tag t-${t.tag}">${TAG[t.tag]}</span>
+    <button class="star" type="button" data-star="${t.id}" aria-pressed="${t.starred}" aria-label="تمييز المهمة">${icon('star')}</button>
+  </li>`;
+}
+
+function renderToday() {
+  const list = tasks.filter(t => t.day === 0).sort((a, b) => a.time.localeCompare(b.time));
+  $('#todayList').innerHTML = list.length
+    ? list.map(taskRow).join('')
+    : '<li class="empty">لا توجد مهام اليوم. أضف أول مهمة لتبدأ يومك.</li>';
+}
+
+function renderWeek() {
+  const now = new Date();
+  $('#week').innerHTML = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
+    const items = tasks.filter(t => t.day === i);
+    const dots = items.slice(0, 4).map(t => `<span class="dot t-${t.tag}" title="${esc(t.title)}"></span>`).join('');
+    const more = items.length > 4 ? `<span class="dot-more">+${items.length - 4}</span>` : '';
+    return `<div class="day${i === 0 ? ' is-today' : ''}">
+      <span class="day-name">${i === 0 ? 'اليوم' : DAYS_AR[d.getDay()]}</span>
+      <span class="day-num">${d.getDate()}</span>
+      <div class="dots">${dots}${more}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderCalendar() {
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  const offset = new Date(y, m, 1).getDay();
+  const total = new Date(y, m + 1, 0).getDate();
+  const eventDays = new Set(
+    tasks.map(t => new Date(y, m, now.getDate() + t.day))
+         .filter(d => d.getMonth() === m)
+         .map(d => d.getDate())
+  );
+  const cells = DAYS_AR.map(d => `<span class="cal-head">${d}</span>`);
+  for (let i = 0; i < offset; i++) cells.push('<span></span>');
+  for (let d = 1; d <= total; d++) {
+    const cls = d === now.getDate() ? ' is-today' : '';
+    const dot = eventDays.has(d) ? '<i class="cal-dot"></i>' : '';
+    cells.push(`<span class="cal-day${cls}">${d}${dot}</span>`);
+  }
+  $('#calGrid').innerHTML = cells.join('');
+  $('#calMonth').textContent = monthFmt(now);
+}
+
+function renderGoals() {
+  const avg = Math.round(goals.reduce((s, g) => s + g.progress, 0) / goals.length);
+  const C = 2 * Math.PI * 54;
+  const bar = $('#ringBar');
+  bar.style.strokeDasharray = C;
+  bar.style.strokeDashoffset = C * (1 - avg / 100);
+  $('#ringValue').textContent = avg + '%';
+  $('#goalList').innerHTML = goals.map(g => `
+    <li class="goal">
+      <span class="goal-state${g.progress === 100 ? ' is-done' : ''}" aria-hidden="true">${g.progress === 100 ? '✓' : ''}</span>
+      <span class="goal-title">${g.title}</span>
+      <span class="goal-pct">${g.progress}%</span>
+    </li>`).join('');
+}
+
+function renderChart() {
+  const xs = [75, 225, 375, 525];
+  const pts = monthly.map((v, i) => ({ x: xs[i], y: 170 - v * 1.3 }));
+  let line = `M${pts[0].x},${pts[0].y}`;
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i], cx = (a.x + b.x) / 2;
+    line += ` C${cx},${a.y} ${cx},${b.y} ${b.x},${b.y}`;
+  }
+  const last = pts[pts.length - 1], first = pts[0];
+  const area = `${line} L${last.x},180 L${first.x},180 Z`;
+  $('#chartSvg').innerHTML = `
+    <defs>
+      <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#8B5CF6" stop-opacity=".45"/>
+        <stop offset="1" stop-color="#8B5CF6" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <g class="chart-grid">
+      <line x1="0" x2="600" y1="60" y2="60"/><line x1="0" x2="600" y1="120" y2="120"/><line x1="0" x2="600" y1="180" y2="180"/>
+    </g>
+    <path d="${area}" fill="url(#areaGrad)"/>
+    <path class="chart-line" d="${line}"/>
+    ${pts.map(p => `<circle class="chart-dot" cx="${p.x}" cy="${p.y}" r="5.5"/>`).join('')}`;
+  const growth = Math.round((monthly[monthly.length - 1] - monthly[0]) / monthly[0] * 100);
+  $('#growth').textContent = `+${growth}%`;
+  const now = new Date();
+  $('#chartX').innerHTML = [-3, -2, -1, 0]
+    .map(k => `<span>${monthFmt(new Date(now.getFullYear(), now.getMonth() + k, 1))}</span>`).join('');
+}
+
+function renderAll() {
+  // حفظ موضع التركيز لاستعادته بعد إعادة الرسم
+  const a = document.activeElement;
+  const sel = a && a.closest && a.closest('#todayList')
+    ? (a.dataset.check ? `[data-check="${a.dataset.check}"]` : a.dataset.star ? `[data-star="${a.dataset.star}"]` : null)
+    : null;
+  renderStats();
+  renderToday();
+  renderWeek();
+  renderCalendar();
+  renderGoals();
+  if (sel) document.querySelector('#todayList ' + sel)?.focus();
+}
+
+/* ---------- التفاعل ---------- */
+$('#todayList').addEventListener('change', e => {
+  const id = e.target.dataset.check;
+  if (id === undefined) return;
+  tasks.find(t => t.id === Number(id)).done = e.target.checked;
+  renderAll();
+});
+
+$('#todayList').addEventListener('click', e => {
+  const btn = e.target.closest('[data-star]');
+  if (!btn) return;
+  const task = tasks.find(t => t.id === Number(btn.dataset.star));
+  task.starred = !task.starred;
+  renderAll();
+});
+
+const addForm = $('#addForm');
+$('#toggleAdd').addEventListener('click', e => {
+  const open = addForm.classList.toggle('is-open');
+  e.currentTarget.setAttribute('aria-expanded', String(open));
+  if (open) $('#taskTitle').focus();
+});
+
+addForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const title = $('#taskTitle').value.trim();
+  if (!title) { $('#taskTitle').focus(); return; }
+  tasks.push({
+    id: nextId++, title,
+    tag: $('#taskTag').value,
+    time: $('#taskTime').value || '12:00',
+    day: 0, starred: false, done: false,
+  });
+  addForm.reset();
+  addForm.classList.remove('is-open');
+  $('#toggleAdd').setAttribute('aria-expanded', 'false');
+  renderAll();
+});
+
+/* ---------- الساعة والتحية ---------- */
+function tick() {
+  const now = new Date();
+  const h = now.getHours();
+  $('#greeting').textContent = `${h < 12 ? 'صباح الخير' : 'مساء الخير'}، ${USER_NAME} 👋`;
+  $('#clock').textContent = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+  $('#period').textContent = h < 12 ? 'صباحاً' : 'مساءً';
+  $('#todayDate').textContent = new Intl.DateTimeFormat('ar-EG', {
+    weekday:'long', day:'numeric', month:'long', year:'numeric', calendar:'gregory', numberingSystem:'latn'
+  }).format(now);
+}
+
+tick();
+setInterval(tick, 30000);
+renderAll();
+renderChart();
+
+// خيارات التصنيف داخل النموذج
+$('#taskTag').innerHTML = Object.entries(TAG).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+</script>
+</body>
+</html>
